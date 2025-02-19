@@ -62,8 +62,11 @@ class Genres(BaseModelForCategoriesAndGenres):
         verbose_name_plural = 'жанры'
 
 
-class Titles(BaseModelForCategoriesAndGenres):
+class Titles(models.Model):
     """Модель представления произведения."""
+    name = models.CharField(
+        max_length=MAX_TEXT_LENGTH,
+    )
     year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска',
         validators=[
@@ -91,7 +94,7 @@ class Titles(BaseModelForCategoriesAndGenres):
         verbose_name_plural = 'произведения'
 
 
-class Reviews(models.Model):
+class Reviews(BaseModelForReviewsAndComments):
     """Модель представления отзыва к произведению."""
     score = models.PositiveSmallIntegerField(
         validators=[
