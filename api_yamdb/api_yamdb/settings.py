@@ -28,7 +28,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'reviews.apps.ReviewsConfig'
+    'reviews.apps.ReviewsConfig',
+    'api.apps.ApiConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -111,3 +112,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+}
