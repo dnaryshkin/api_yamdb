@@ -28,7 +28,7 @@ class CustomizedUser(AbstractUser):
     bio = models.TextField(
         'Биография',
         blank=True,
-        null=True
+        # null=True
     )
     confirmation_code = models.CharField(
         max_length=CONFIRMATION_CODE_LENGTH,
