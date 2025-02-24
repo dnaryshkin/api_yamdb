@@ -4,9 +4,9 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, \
     DestroyModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, \
-    TitleRatingSerializer
+    TitleRatingSerializer, ReviewSerializer, CommentSerializer
 
 
 class ListCreateDestroyViewSet(
@@ -42,3 +42,15 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return TitleRatingSerializer
         return TitleSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """ViewSet для отзывов."""
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """ViewSet для комментариев."""
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
