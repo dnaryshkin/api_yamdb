@@ -49,8 +49,32 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+    def get_queryset(self):
+        """Возвращает комментарий связанный с определенным постом."""
+        title_id = self.kwargs.get('post_id')
+        return Comment.objects.filter(title_id=title_id)
+
+    def perform_create(self, serializer):
+        """
+        Функция перед обновлением проверяет, что пользователь является автором.
+        """
+        title_id = self.kwargs.get('post_id')
+        serializer.save(title_id=title_id, author=self.request.user)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet для комментариев."""
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        """Возвращает комментарий связанный с определенным постом."""
+        review = self.kwargs.get('review_id')
+        return Comment.objects.filter(review=review)
+
+    def perform_create(self, serializer):
+        """
+        Функция перед обновлением проверяет, что пользователь является автором.
+        """
+        review_id = self.kwargs.get('review_id')
+        serializer.save(review_id=review_id, author=self.request.user)
