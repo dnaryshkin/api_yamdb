@@ -50,7 +50,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        """Возвращает комментарий связанный с определенным постом."""
+        """Возвращает отзывы связанные с определенным произведением."""
         title_id = self.kwargs.get('post_id')
         return Comment.objects.filter(title_id=title_id)
 
@@ -68,7 +68,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        """Возвращает комментарий связанный с определенным постом."""
+        """Возвращает комментарий связанный с отзывом."""
         review = self.kwargs.get('review_id')
         return Comment.objects.filter(review=review)
 
