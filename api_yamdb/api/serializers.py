@@ -1,8 +1,5 @@
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
 
 from reviews.models import Category, Genre, Title, Review, Comment
 
@@ -74,4 +71,3 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
-

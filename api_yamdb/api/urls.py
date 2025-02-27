@@ -1,13 +1,10 @@
 from django.urls import include, path
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 from rest_framework.routers import DefaultRouter
 
 from api.views import CategoryViewSet, TitleViewSet, GenreViewSet, \
     ReviewViewSet, CommentViewSet
-from users.views import SignupViewSet, TokenViewSet, UserProfileViewSet, AdminUserViewSet
+from users.views import SignupViewSet, TokenViewSet, UserProfileViewSet, \
+    AdminUserViewSet
 
 router_v1 = DefaultRouter()
 
@@ -30,7 +27,9 @@ router_v1.register(
     basename='comments-list'
 )
 v1_api_urls = [
-    path('users/me/', UserProfileViewSet.as_view({'get': 'retrieve', 'patch': 'update'}), name='user-profile'),
+    path('users/me/',
+         UserProfileViewSet.as_view({'get': 'retrieve', 'patch': 'update'}),
+         name='user-profile'),
     path('', include(router_v1.urls)),
 ]
 

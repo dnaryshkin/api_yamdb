@@ -11,7 +11,7 @@ from rest_framework.mixins import (CreateModelMixin, ListModelMixin,
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import GenericViewSet
 
-from reviews.models import Category, Genre, Title, Review, Comment
+from reviews.models import Category, Genre, Title, Review
 from .permissions import IsAdminOrReadOnly, \
     IsAuthUserOrAuthorOrModerOrAdminOrReadOnly
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
@@ -39,6 +39,7 @@ class CategoryViewSet(ListCreateDestroyViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
 
+
 class GenreViewSet(ListCreateDestroyViewSet):
     """ViewSet для жанров наследуемый от ListCreateDestroyViewSet."""
     queryset = Genre.objects.all()
@@ -48,6 +49,7 @@ class GenreViewSet(ListCreateDestroyViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+
 
 class TitleFilter(filters.FilterSet):
     """Класс для фильтрации произведений по жанру."""

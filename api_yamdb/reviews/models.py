@@ -6,7 +6,6 @@ from django.db import models
 
 from .constants import (MAX_TEXT_LENGTH, MAX_SLUG_LENGTH)
 
-
 User = get_user_model()
 
 
@@ -134,7 +133,6 @@ class Review(models.Model):
                 name='unique_author_title',
             )
         ]
-
 
     def __str__(self):
         """Возвращение текста отзыва."""
