@@ -1,23 +1,25 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
-from users.constants import CONFIRMATION_CODE_LENGTH, MAX_TEXT_LENGTH, MAX_EMAIL_LENGTH
+
+from users.constants import CONFIRMATION_CODE_LENGTH, MAX_EMAIL_LENGTH, \
+    MAX_TEXT_LENGTH
 
 User = get_user_model()
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
     """Сериализатор для управления пользователями (доступен админу)."""
+
     # bio = serializers.CharField(allow_blank=True, allow_null=True, default="")
     class Meta:
         model = User
         fields = ('username', 'email', 'role', 'first_name', 'last_name', 'bio')
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для профиля пользователя (редактирование без смены роли)."""
+
     role = serializers.CharField(read_only=True)
 
     class Meta:
@@ -25,30 +27,39 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'role', 'first_name', 'last_name', 'bio')
 
 
-class SignupSerializer(serializers.Serializer):
+class SignupSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации пользователя."""
+
     username = serializers.CharField(
         max_length=MAX_TEXT_LENGTH,
-        validators=[UnicodeUsernameValidator()],
+        validators=(UnicodeUsernameValidator(),),
     )
     email = serializers.EmailField(max_length=MAX_EMAIL_LENGTH)
 
+    class Meta:
+        model = User
+        fields = ("username", "email")
+
+    def validate_username(self, value):
+        """Проверка на неиспользование имени me."""
+        if value.lower() == 'me':
+            raise serializers.ValidationError('Использовать "me" запрещено!')
+        return value
+
     def validate(self, data):
-        username = data.get('username')
-        email = data.get('email')
-        if username.lower() == 'me':
-            raise serializers.ValidationError(
-                {'username': 'Использовать "me" запрещено!'}
-                )
-        user_by_username = User.objects.filter(username=username).first()
-        user_by_email = User.objects.filter(email=email).first()
+        """Проверка передаваемых имени и email."""
+        username = data["username"].lower()
+        email = data["email"].lower()
 
-        if user_by_username and user_by_username.email != email:
-            raise serializers.ValidationError({"username": "Этот username уже занят!"})
+        if User.objects.filter(username__iexact=username).exclude(
+                email__iexact=email
+        ).exists():
+            raise serializers.ValidationError("Этот username уже занят!")
 
-        if user_by_email and user_by_email.username != username:
-            raise serializers.ValidationError({"email": "Этот email уже используется!"})
-
+        if User.objects.filter(email__iexact=email).exclude(
+                username__iexact=username
+        ).exists():
+            raise serializers.ValidationError("Этот email уже используется!")
         return data
 
 
@@ -56,4 +67,6 @@ class TokenSerializer(serializers.Serializer):
     """Сериализатор для получения JWT-токена."""
 
     username = serializers.CharField(max_length=MAX_TEXT_LENGTH)
-    confirmation_code = serializers.CharField(max_length=CONFIRMATION_CODE_LENGTH)
+    confirmation_code = serializers.CharField(
+        max_length=CONFIRMATION_CODE_LENGTH
+    )
