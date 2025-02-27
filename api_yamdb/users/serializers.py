@@ -11,10 +11,11 @@ User = get_user_model()
 class AdminUserSerializer(serializers.ModelSerializer):
     """Сериализатор для управления пользователями (доступен админу)."""
 
-    # bio = serializers.CharField(allow_blank=True, allow_null=True, default="")
     class Meta:
         model = User
-        fields = ('username', 'email', 'role', 'first_name', 'last_name', 'bio')
+        fields = (
+            'username', 'email', 'role', 'first_name', 'last_name', 'bio'
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,7 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'role', 'first_name', 'last_name', 'bio')
+        fields = (
+            'username', 'email', 'role', 'first_name', 'last_name', 'bio'
+        )
 
 
 class SignupSerializer(serializers.ModelSerializer):

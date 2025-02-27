@@ -33,7 +33,9 @@ class SignupViewSet(viewsets.ViewSet):
                 username=serializer.validated_data['username'],
                 defaults={'email': serializer.validated_data['email']}
             )
-            if not created and user.email != serializer.validated_data['email']:
+            if not created and user.email != serializer.validated_data[
+                'email'
+            ]:
                 return Response(
                     {
                         'email': [user.email],
@@ -43,7 +45,7 @@ class SignupViewSet(viewsets.ViewSet):
                 )
             if created and User.objects.filter(
                     email=serializer.validated_data['email']
-                    ).exclude(username=user.username).exists():
+            ).exclude(username=user.username).exists():
                 return Response(
                     serializer.data,
                     status=status.HTTP_400_BAD_REQUEST
