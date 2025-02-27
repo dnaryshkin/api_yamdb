@@ -1,6 +1,8 @@
-from django.core.management.base import BaseCommand
 import csv
+
 from django.conf import settings
+from django.core.management.base import BaseCommand
+
 from reviews.models import Category, Review, Genre, Title, Comment, User
 
 
@@ -10,7 +12,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         dir_place = settings.BASE_DIR / 'static' / 'data'
+        self.import_category(dir_place)
+        self.import_genre(dir_place)
+        self.import_titles(dir_place)
+        self.import_users(dir_place)
+        self.import_reviews(dir_place)
+        self.import_comments(dir_place)
+        self.import_genre_title(dir_place)
 
+    def import_category(self, dir_place):
         with open(dir_place / 'category.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             Category.objects.all().delete()
@@ -31,6 +41,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для Category завершён')
                 )
 
+    def import_genre(self, dir_place):
         with open(dir_place / 'genre.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             Genre.objects.all().delete()
@@ -51,6 +62,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для Genre завершён')
                 )
 
+    def import_titles(self, dir_place):
         with open(dir_place / 'titles.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             Title.objects.all().delete()
@@ -72,6 +84,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для Title завершён')
                 )
 
+    def import_users(self, dir_place):
         with open(dir_place / 'users.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             User.objects.all().delete()
@@ -96,6 +109,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для User завершён')
                 )
 
+    def import_reviews(self, dir_place):
         with open(dir_place / 'review.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             Review.objects.all().delete()
@@ -119,6 +133,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для Review завершён')
                 )
 
+    def import_comments(self, dir_place):
         with open(dir_place / 'comments.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter=',')
             Comment.objects.all().delete()
@@ -141,6 +156,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS('Импорт данных для Comment завершён')
                 )
 
+    def import_genre_title(self, dir_place):
         with (open(dir_place / 'genre_title.csv', 'r', encoding='utf-8')
               as file):
             reader = csv.DictReader(file, delimiter=',')
