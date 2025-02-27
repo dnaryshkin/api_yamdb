@@ -19,7 +19,9 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор для профиля пользователя (редактирование без смены роли)."""
+    """
+    Сериализатор для профиля пользователя (редактирование без смены роли).
+    """
 
     role = serializers.CharField(read_only=True)
 
