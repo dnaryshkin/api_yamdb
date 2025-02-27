@@ -10,7 +10,6 @@ router_v1 = DefaultRouter()
 
 router_v1.register(r'auth/signup', SignupViewSet, basename='signup')
 router_v1.register(r'auth/token', TokenViewSet, basename='token')
-# router_v1.register(r'users/me', UserProfileViewSet, basename='user-profile')
 router_v1.register(r'users', AdminUserViewSet, basename='admin-users')
 
 router_v1.register('categories', CategoryViewSet, basename='categories')
