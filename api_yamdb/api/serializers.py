@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
+
 
 from reviews.models import Category, Genre, Title, Review, Comment
 
@@ -35,20 +35,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('author', 'title'),
-            )
-        ]
-
-    def validate_score(self, value):
-        """Функция проверяет, что отзыв больше 1 и меньше 10."""
-        if value < 1 or value > 10:
-            raise serializers.ValidationError(
-                'Оценка не может быть меньше 1 или больше 10'
-            )
-        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -67,23 +53,13 @@ class TitleRatingSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Title c указанием рейтинга."""
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = (
             "id", "name", "year", "rating", "description", "genre", "category"
         )
         model = Title
-
-    def get_rating(self, obj):
-        reviews = obj.reviews.all()
-        if not reviews:
-            return None
-        score = 0
-        for review in reviews:
-            score += review.score
-        average_rating = round(score / len(reviews))
-        return average_rating
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -99,12 +75,3 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
-    def validate_year(self, value):
-        from django.utils import timezone
-        current_year = timezone.now().year
-        if value > current_year:
-            raise serializers.ValidationError('Указан год из будущего')
-        if value <= 0:
-            raise serializers.ValidationError(
-                'Год не может быть равен либо меньше 0')
-        return value

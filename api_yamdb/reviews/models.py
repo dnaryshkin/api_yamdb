@@ -1,13 +1,17 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from .constants import (MAX_TEXT_LENGTH, MAX_SLUG_LENGTH)
 
+
 User = get_user_model()
 
 
-class BaseModelForCategoryAndGenre(models.Model):
-    """Описание базовой модели для наследования Categories и Genres"""
+class Category(models.Model):
+    """Модель представления категории."""
     name = models.CharField(
         max_length=MAX_TEXT_LENGTH,
         unique=True,
@@ -16,31 +20,40 @@ class BaseModelForCategoryAndGenre(models.Model):
     slug = models.SlugField(
         max_length=MAX_SLUG_LENGTH,
         unique=True,
+        verbose_name='Слаг',
     )
-
-    class Meta:
-        abstract = True
-        ordering = ('name',)
-
-    def __str__(self):
-        """Возвращение названия."""
-        return self.name
-
-
-class Category(BaseModelForCategoryAndGenre):
-    """Модель представления категории."""
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'категории'
+        ordering = ('name',)
+
+    def __str__(self):
+        """Возвращает название категории"""
+        return f'Название категории: {self.name}'
 
 
-class Genre(BaseModelForCategoryAndGenre):
+class Genre(models.Model):
     """Модель представления жанров"""
+    name = models.CharField(
+        max_length=MAX_TEXT_LENGTH,
+        unique=True,
+        verbose_name='Название',
+    )
+    slug = models.SlugField(
+        max_length=MAX_SLUG_LENGTH,
+        unique=True,
+        verbose_name='Слаг',
+    )
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'жанры'
+        ordering = ('name',)
+
+    def __str__(self):
+        """Возвращает название жанра"""
+        return f'Название жанра: {self.name}'
 
 
 class Title(models.Model):
@@ -49,13 +62,15 @@ class Title(models.Model):
         max_length=MAX_TEXT_LENGTH,
         verbose_name='Название произведения',
     )
-    year = models.PositiveSmallIntegerField(
+    year = models.IntegerField(
         verbose_name='Год выпуска',
+        validators=[
+            MaxValueValidator(datetime.now().year),
+        ]
     )
     description = models.TextField(
         verbose_name='Описание',
-        blank=True,
-        null=True
+        null=True,
     )
     genre = models.ManyToManyField(
         Genre,
@@ -73,18 +88,17 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'произведения'
+        ordering = ('name',)
 
     def __str__(self):
         """Возвращение названия произведения."""
-        return self.name
-
+        return f'Название произведения: {self.name}'
 
 
 class Review(models.Model):
     """Модель представления отзывов"""
     text = models.TextField(
         verbose_name='Текст',
-        help_text='Текст отзыва',
     )
     title = models.ForeignKey(
         Title,
@@ -98,10 +112,13 @@ class Review(models.Model):
         related_name='reviews',
         verbose_name='Автор',
     )
-    score = models.PositiveSmallIntegerField(
+    score = models.IntegerField(
         verbose_name='Оценка',
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10),
+        ]
     )
-
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации отзыва',
@@ -110,18 +127,24 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'отзывы'
-        ordering = ('-pub_date',)
+        ordering = ('pub_date',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_author_title',
+            )
+        ]
+
 
     def __str__(self):
         """Возвращение текста отзыва."""
-        return self.text
+        return f'Отзыв: {self.text}'
 
 
 class Comment(models.Model):
     """Модель представления комментариев"""
     text = models.TextField(
         verbose_name='Текст',
-        help_text='Текст комментария'
     )
     review = models.ForeignKey(
         Review,
@@ -147,4 +170,4 @@ class Comment(models.Model):
 
     def __str__(self):
         """Возвращение текста комментария."""
-        return self.text
+        return f'Комментарий: {self.text}'
