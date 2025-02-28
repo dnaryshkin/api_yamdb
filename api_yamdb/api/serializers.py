@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -58,6 +60,15 @@ class TitleRatingSerializer(serializers.ModelSerializer):
         )
         model = Title
 
+    def validate(self, data):
+        """Валидация что рейтинг от 1 до 10."""
+        rating = data['rating']
+        if rating < 1 or rating > 10:
+            raise serializers.ValidationError(
+                'Рейтинг должно быть целое число от 1 до 10'
+            )
+        return data
+
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Title."""
@@ -71,3 +82,10 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+
+    def validate(self, data):
+        """Валидация что год не больше текущего года."""
+        current_year = datetime.today().year
+        if 'year' in data and data['year'] > current_year:
+            raise serializers.ValidationError("Год не может быть больше текущего!")
+        return data
