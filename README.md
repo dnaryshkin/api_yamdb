@@ -93,6 +93,17 @@ python manage.py runserver
 python3 manage.py runserver
 ~~~
 
+### Выполнить импорт данных из CSV-файлов:
+
+Для Windows:
+~~~
+python manage.py import_csv
+~~~
+Для Linux/MacOS:
+~~~
+python3 manage.py import_csv
+~~~
+
 ## Примеры запросов к API.
 
 ### Регистрация нового пользователя.

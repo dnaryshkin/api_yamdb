@@ -2,6 +2,7 @@ import csv
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from reviews.models import Category, Review, Genre, Title, Comment, User
 
@@ -10,15 +11,22 @@ class Command(BaseCommand):
     """Класс для импорта данных из CSV файлов."""
     help = 'Импортирует файлы csv с данными'
 
+    @transaction.atomic
     def handle(self, *args, **options):
         dir_place = settings.BASE_DIR / 'static' / 'data'
-        self.import_category(dir_place)
-        self.import_genre(dir_place)
-        self.import_titles(dir_place)
-        self.import_users(dir_place)
-        self.import_reviews(dir_place)
-        self.import_comments(dir_place)
-        self.import_genre_title(dir_place)
+        try:
+            self.import_category(dir_place)
+            self.import_genre(dir_place)
+            self.import_titles(dir_place)
+            self.import_users(dir_place)
+            self.import_reviews(dir_place)
+            self.import_comments(dir_place)
+            self.import_genre_title(dir_place)
+            self.stdout.write(self.style.SUCCESS(
+                'Импорт всех данный успешно завершен!'
+            ))
+        except Exception:
+            self.stdout.write(self.style.ERROR('Импорт данных не выполнен!'))
 
     def import_category(self, dir_place):
         with open(dir_place / 'category.csv', 'r', encoding='utf-8') as file:
