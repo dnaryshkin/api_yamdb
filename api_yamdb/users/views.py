@@ -1,6 +1,4 @@
-import random
-import string
-
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -11,16 +9,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from users.constants import CONFIRMATION_CODE_LENGTH
-from users.permissions import IsAdmin
+from api.permissions import IsAdmin
 from users.serializers import AdminUserSerializer, SignupSerializer, \
     TokenSerializer, UserSerializer
+from users.utils import generate_confirmation_code
 
 User = get_user_model()
-
-
-def generate_confirmation_code():
-    return ''.join(random.choices(string.digits, k=CONFIRMATION_CODE_LENGTH))
 
 
 class SignupViewSet(viewsets.ViewSet):
@@ -57,7 +51,7 @@ class SignupViewSet(viewsets.ViewSet):
             send_mail(
                 subject='Ваш код подтверждения',
                 message=f'Ваш код: {user.confirmation_code}',
-                from_email='admin@yamdb.ru',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=(user.email,),
                 fail_silently=True,
             )

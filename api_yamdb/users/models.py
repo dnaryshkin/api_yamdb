@@ -38,10 +38,12 @@ class CustomizedUser(AbstractUser):
         null=True
     )
 
+    @property
     def is_admin(self):
         """Проверка на одмина."""
         return self.role == self.ADMIN or self.is_superuser
 
+    @property
     def is_moderator(self):
         """Проверка на модератора."""
         return self.role == self.MODERATOR
