@@ -10,3 +10,4 @@ def validate_year(value):
         raise ValidationError(
             f'Указанный год: {value} - больше текущего года: {current_year}'
         )
+    return value

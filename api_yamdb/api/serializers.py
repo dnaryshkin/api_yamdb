@@ -56,7 +56,7 @@ class TitleRatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            "id", "name", "year", "rating", "description", "genre", "category"
+            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
         model = Title
 
@@ -87,5 +87,7 @@ class TitleSerializer(serializers.ModelSerializer):
         """Валидация что год не больше текущего года."""
         current_year = datetime.today().year
         if 'year' in data and data['year'] > current_year:
-            raise serializers.ValidationError("Год не может быть больше текущего!")
+            raise serializers.ValidationError(
+                'Год не может быть больше текущего!'
+            )
         return data

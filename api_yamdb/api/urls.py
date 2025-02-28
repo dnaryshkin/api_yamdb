@@ -30,7 +30,7 @@ v1_api_urls = [
         'users/me/',
         UserProfileViewSet.as_view({'get': 'retrieve', 'patch': 'update'}),
         name='user-profile'
-        ),
+    ),
     path('', include(router_v1.urls)),
 ]
 
