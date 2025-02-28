@@ -1,10 +1,9 @@
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from .constants import (MAX_TEXT_LENGTH, MAX_SLUG_LENGTH)
+from .validators import validate_year
 
 User = get_user_model()
 
@@ -64,7 +63,7 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год выпуска',
         validators=[
-            MaxValueValidator(datetime.now().year),
+            MaxValueValidator(validate_year),
         ]
     )
     description = models.TextField(
