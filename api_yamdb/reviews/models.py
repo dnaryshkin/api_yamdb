@@ -27,7 +27,6 @@ class Category(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        """Возвращает название категории"""
         return f'Название категории: {self.name}'
 
 
@@ -50,7 +49,6 @@ class Genre(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        """Возвращает название жанра"""
         return f'Название жанра: {self.name}'
 
 
@@ -62,9 +60,8 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Год выпуска',
-        validators=[
-            MaxValueValidator(validate_year),
-        ]
+        help_text='Укажите год не позже текущего',
+        validators=(validate_year,)
     )
     description = models.TextField(
         verbose_name='Описание',
@@ -72,14 +69,12 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        related_name='titles',
         verbose_name='Жанр',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        null=True,
-        related_name='titles',
+        blank=False,
         verbose_name='Категория',
     )
 
@@ -87,9 +82,9 @@ class Title(models.Model):
         verbose_name = 'Произведение'
         verbose_name_plural = 'произведения'
         ordering = ('name',)
+        default_related_name = 'titles'
 
     def __str__(self):
-        """Возвращение названия произведения."""
         return f'Название произведения: {self.name}'
 
 
@@ -97,21 +92,21 @@ class Review(models.Model):
     """Модель представления отзывов"""
     text = models.TextField(
         verbose_name='Текст',
+        help_text='Напишите текст отзыва.'
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Автор',
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
+        help_text='Укажите оценку произведению (от 1 до 10)',
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10),
@@ -126,6 +121,7 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'отзывы'
         ordering = ('pub_date',)
+        default_related_name = 'reviews'
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'title'],
@@ -134,7 +130,6 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        """Возвращение текста отзыва."""
         return f'Отзыв: {self.text}'
 
 
@@ -142,17 +137,16 @@ class Comment(models.Model):
     """Модель представления комментариев"""
     text = models.TextField(
         verbose_name='Текст',
+        help_text='Текст комментария.'
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Отзыв'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Автор',
     )
     pub_date = models.DateTimeField(
@@ -164,7 +158,7 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ('pub_date',)
+        default_related_name = 'comments'
 
     def __str__(self):
-        """Возвращение текста комментария."""
         return f'Комментарий: {self.text}'
