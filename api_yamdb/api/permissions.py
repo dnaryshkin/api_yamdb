@@ -18,7 +18,7 @@ class IsAdmin(BasePermission):
 class IsAdminOrReadOnly(BasePermission):
     """
     Класс предоставляющий доступ админу или
-    get запрос от пользователя без токена.
+    GET запрос доступен всем пользователям.
     """
 
     def has_permission(self, request, view):
@@ -27,13 +27,12 @@ class IsAdminOrReadOnly(BasePermission):
         return request.user.is_authenticated and request.user.is_admin
 
 
-class IsAuthUserOrAuthorOrModerOrAdminOrReadOnly(BasePermission):
+class IsAuthorOrStaff(BasePermission):
     """
-    Класс предоставляющий доступ при get запросе всем пользователям,
-    при post запросе только аутентифицированным пользователям,
-    при patch и delete запросе автору, модератору, админу.
+    GET-запросы доступны всем пользователям;
+    POST-запросы доступны только аутентифицированным пользователям;
+    PATCH и DELETE-запросы доступны автору, модератору или администратору.
     """
-
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True

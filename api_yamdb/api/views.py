@@ -1,7 +1,5 @@
-import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
@@ -12,8 +10,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import GenericViewSet
 
 from reviews.models import Category, Genre, Title, Review
-from .permissions import IsAdminOrReadOnly, \
-    IsAuthUserOrAuthorOrModerOrAdminOrReadOnly
+from .filters import TitleFilter
+from .permissions import *
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
                           TitleRatingSerializer, ReviewSerializer,
                           CommentSerializer)
@@ -73,7 +71,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для отзывов."""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthUserOrAuthorOrModerOrAdminOrReadOnly,)
+    permission_classes = (IsAuthorOrStaff,)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_title(self):
@@ -105,7 +103,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet для комментариев."""
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthUserOrAuthorOrModerOrAdminOrReadOnly,)
+    permission_classes = (IsAuthorOrStaff,)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_review(self):
