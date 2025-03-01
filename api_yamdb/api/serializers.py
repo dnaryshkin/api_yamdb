@@ -63,7 +63,7 @@ class TitleRatingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Валидация что рейтинг от 1 до 10."""
         rating = data['rating']
-        if rating < 1 or rating > 10:
+        if 1 > rating > 10:
             raise serializers.ValidationError(
                 'Рейтинг должно быть целое число от 1 до 10'
             )
