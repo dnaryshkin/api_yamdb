@@ -26,7 +26,6 @@ class ListCreateDestroyViewSet(
     Класс для наследования во ViewSet для реализации просмотра списка обьектов,
     создания и удаления.
     """
-    pass
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -49,20 +48,6 @@ class GenreViewSet(ListCreateDestroyViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-
-
-class TitleFilter(filters.FilterSet):
-    """Класс для фильтрации произведений по жанру."""
-    genre = django_filters.CharFilter(
-        field_name='genre__slug',
-    )
-    category = django_filters.CharFilter(
-        field_name='category__slug',
-    )
-
-    class Meta:
-        model = Title
-        fields = ('genre', 'category', 'year', 'name')
 
 
 class TitleViewSet(viewsets.ModelViewSet):
